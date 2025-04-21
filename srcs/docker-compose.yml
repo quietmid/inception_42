@@ -10,7 +10,6 @@ services:
       - inception
     restart: always
 
-
   wordpress:
     build: ./requirements/wordpress
     container_name: wordpress
@@ -25,7 +24,7 @@ services:
     networks:
       - inception
     restart: always
-
+    
   nginx:
     container_name: nginx
     build: ./requirements/nginx

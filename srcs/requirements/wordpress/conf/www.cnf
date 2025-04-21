@@ -1,0 +1,18 @@
+[www]
+
+; www-data is the standard system user in Linux for web services.
+; limited permission (not root), designed to run web app securely and independent of any specific web server software
+
+user = www-data ; Runs as the webserver user
+group = www-data ; Group ownership
+
+listen = 9000 ; Port or socket
+
+pm = dynamic ; Process Manager mode (dynamic/static/ondemand)
+
+pm.max_children = 10
+pm.start_server = 2
+pm.min_spare_servers = 3
+pm.max_spare_servers = 5
+
+; dynamic process management efficiently handles wordpress' variable traffic
