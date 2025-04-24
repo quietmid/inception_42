@@ -1,10 +1,21 @@
+volumes:
+  wordpress_data:
+    name: wordpress_data
+    driver: local
 
-#need image name for each services
+  db_data:
+    name: db_data
+    driver: local
+
+networks:
+  inception:
+    driver: bridge
+
 services:
   mariadb:
     build: ./requirements/mariadb
     container_name: mariadb
-    image: mariadb
+    image: mariadb:00.00.01
     env_file:
       - .env
     volumes:
@@ -16,7 +27,7 @@ services:
   wordpress:
     build: ./requirements/wordpress
     container_name: wordpress
-    immage: wordpress
+    image: wordpress:00.00.02
     env_file:
       - .env
     depends_on:
@@ -32,7 +43,7 @@ services:
   nginx:
     container_name: nginx
     build: ./requirements/nginx
-    image: nginx
+    image: nginx:00.00.03
     ports:
       - "443:443"
     env_file:
@@ -44,15 +55,3 @@ services:
     networks:
       - inception
     restart: always
-volumes:
-  wordpress_data:
-    name: wordpress_data
-    driver: local
-
-  db_data:
-    name: db_data
-    driver: local
-
-networks:
-  inception:
-    driver: bridge
