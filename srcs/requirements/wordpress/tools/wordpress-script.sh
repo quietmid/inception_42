@@ -3,19 +3,56 @@
 # Exit on any error
 set -e
 
-# Download WordPress
+# Set PHP memory limit
+echo "Setting PHP memory limit..."
+echo "memory_limit = 512M" >> /etc/php83/php.ini
+
+# go to wordpress directory where files are stored
+cd /var/www/html
+
+# Download and setup WP-CLI and make it executable
+echo "Downloading WP-CLI..."
+wget -q https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -O /usr/local/bin/wp || { echo "Failed to download wp-cli.phar"; exit 1; }
+chmod +x /usr/local/bin/wp
+
+# Wait for MariaDB to be ready
+echo "Waiting for MariaDB..."
+mariadb-admin ping --protocol=tcp --host=mariadb -u $WORDPRESS_DATABASE_USER --password=$WORDPRESS_DATABASE_USER_PASSWORD --wait=300
+
+# Download WordPress core
 echo "Downloading WordPress..."
-wget https://wordpress.org/latest.tar.gz -O /tmp/wordpress.tar.gz
+wp core download --allow-root --path=/var/www/html
 
-# Extract WordPress
-echo "Extracting WordPress..."
-tar -xzf /tmp/wordpress.tar.gz -C /var/www/wp
-rm /tmp/wordpress.tar.gz
+# Create wp-config.php
+echo "Creating wp-config.php..."
+wp config create \
+    --dbname=$WORDPRESS_DATABASE_NAME \
+    --dbuser=$WORDPRESS_DATABASE_USER \
+    --dbpass=$WORDPRESS_DATABASE_USER_PASSWORD \
+    --dbhost=mariadb \
+    --force \
+    --path=/var/www/html
 
-# Move WordPress files to html directory
-echo "Moving WordPress files..."
-mv /var/www/wp/wordpress/* /var/www/html/
-rm -rf /var/www/wp
+# Install WordPress
+echo "Installing WordPress..."
+wp core install \
+    --url="$DOMAIN_NAME" \
+    --title="$WORDPRESS_TITLE" \
+    --admin_user="$WORDPRESS_ADMIN" \
+    --admin_password="$WORDPRESS_ADMIN_PASSWORD" \
+    --admin_email="$WORDPRESS_ADMIN_EMAIL" \
+    --allow-root \
+    --skip-email \
+    --path=/var/www/html
+
+# Create additional user
+echo "Creating WordPress user..."
+wp user create \
+    $WORDPRESS_USER \
+    $WORDPRESS_USER_EMAIL \
+    --user_pass=$WORDPRESS_USER_PASSWORD \
+    --allow-root \
+    --path=/var/www/html
 
 # Set proper permissions
 echo "Setting permissions..."
@@ -23,21 +60,6 @@ chown -R www-data:www-data /var/www/html
 find /var/www/html -type d -exec chmod 755 {} \;
 find /var/www/html -type f -exec chmod 644 {} \;
 
-# Create wp-config.php if it doesn't exist
-if [ ! -f /var/www/html/wp-config.php ]; then
-    echo "Creating wp-config.php..."
-    cp /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
-    
-    # Replace database configuration
-    sed -i "s/database_name_here/$MYSQL_DATABASE/g" /var/www/html/wp-config.php
-    sed -i "s/username_here/$MYSQL_USER/g" /var/www/html/wp-config.php
-    sed -i "s/password_here/$MYSQL_PASSWORD/g" /var/www/html/wp-config.php
-    sed -i "s/localhost/mariadb/g" /var/www/html/wp-config.php
-    
-    # Add security keys
-    sed -i "s/put your unique phrase here/$(openssl rand -base64 32)/g" /var/www/html/wp-config.php
-fi
-
-# Start PHP-FPM
+# Start PHP-FPM in foreground mode
 echo "Starting PHP-FPM..."
-exec php-fpm 
+exec php-fpm83 -F 
