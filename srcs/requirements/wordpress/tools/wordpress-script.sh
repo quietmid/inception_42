@@ -31,7 +31,12 @@ wp config create \
     --dbpass=$WORDPRESS_DATABASE_USER_PASSWORD \
     --dbhost=mariadb \
     --force \
-    --path=/var/www/html
+    --skip-check \
+    --extra-php <<PHP
+define('WP_HOME', 'https://$DOMAIN_NAME');
+define('WP_SITEURL', 'https://$DOMAIN_NAME');
+define('FS_METHOD', 'direct');
+PHP
 
 # Install WordPress
 echo "Installing WordPress..."
@@ -43,7 +48,6 @@ wp core install \
     --admin_email="$WORDPRESS_ADMIN_EMAIL" \
     --allow-root \
     --skip-email \
-    --path=/var/www/html
 
 # Create additional user
 echo "Creating WordPress user..."
@@ -52,7 +56,6 @@ wp user create \
     $WORDPRESS_USER_EMAIL \
     --user_pass=$WORDPRESS_USER_PASSWORD \
     --allow-root \
-    --path=/var/www/html
 
 # Set proper permissions
 echo "Setting permissions..."
