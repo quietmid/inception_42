@@ -30,13 +30,14 @@ RUN apk update && apk add mariadb-client \
 RUN adduser -S www-data -g www-data -D -G www-data
 
 # Copy PHP-FPM configuration
-COPY ./conf/www.conf /usr/local/etc/php-fpm.d/www.conf
+# COPY ./conf/www.conf /usr/local/etc/php-fpm.d/www.conf 
+COPY ./conf/www.conf /etc/php83/php-fpm.d/www.conf
 
 # Create necessary directories
 RUN mkdir -p /var/www/html \
     && chown -R www-data:www-data /var/www/html
 
-	# copy and set up wordpress script
+# copy and set up wordpress script
 COPY ./tools/wordpress-script.sh /usr/local/bin/wordpress-script.sh
 RUN chmod +x /usr/local/bin/wordpress-script.sh
 

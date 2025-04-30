@@ -8,7 +8,6 @@ RUN apk update && apk add --no-cache \
     mariadb-client \
     mariadb-common \
     && rm -rf /var/cache/apk/* \
-    && mariadb-install-db --user=mysql --datadir=/var/lib/mysql
 # Create necessary directories with proper permissions
 RUN mkdir -p /run/mysqld \
     && chown -R mysql:mysql /run/mysqld \
@@ -30,4 +29,3 @@ VOLUME ["/var/lib/mysql"]
 
 # Run MariaDB properly as PID 1
 ENTRYPOINT ["/usr/local/bin/configure_db.sh"]
-CMD ["mysqld"]

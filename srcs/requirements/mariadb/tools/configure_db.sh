@@ -1,29 +1,39 @@
-#!/bin/bash
+#!/bin/sh
+set -e
 
-# Initialize the database with proper security settings
-mysqld --user=mysql --bootstrap <<EOF
+echo "--- Ensuring correct permissions for /var/lib/mysql ---"
+chown -R mysql:mysql /var/lib/mysql
+chmod 750 /var/lib/mysql
+
+echo "--- Checking MariaDB initialization ---"
+# Only initialize if system tables don't exist
+if [ ! -d "/var/lib/mysql/mysql" ]; then
+    echo "--- Initializing MariaDB system tables ---"
+    mariadb-install-db --user=mysql --datadir=/var/lib/mysql >/dev/null
+
+    echo "--- Creating WordPress database and user ---"
+    mysqld --user=mysql --bootstrap <<EOF
 USE mysql;
+FLUSH PRIVILEGES;
 
-# Remove anonymous users for security
-DELETE FROM mysql.user WHERE User = '';
+ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';
+DELETE FROM mysql.user WHERE User='';
+DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost');
 
-# Create database
-CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;
+CREATE DATABASE IF NOT EXISTS \`$WORDPRESS_DATABASE_NAME\` 
+  CHARACTER SET utf8mb4 
+  COLLATE utf8mb4_unicode_ci;
 
-# Create and configure regular user
-CREATE USER IF NOT EXISTS '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';
-GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'%';
-
-# Create and configure admin user (if variables are set)
-if [ ! -z "$MYSQL_ADMIN_USER" ] && [ ! -z "$MYSQL_ADMIN_PASSWORD" ]; then
-    CREATE USER IF NOT EXISTS '$MYSQL_ADMIN_USER'@'%' IDENTIFIED BY '$MYSQL_ADMIN_PASSWORD';
-    GRANT ALL PRIVILEGES ON *.* TO '$MYSQL_ADMIN_USER'@'%';
-fi
+CREATE USER IF NOT EXISTS '$WORDPRESS_DATABASE_USER'@'%' 
+  IDENTIFIED BY '$WORDPRESS_DATABASE_PASSWORD';
+GRANT ALL PRIVILEGES ON \`$WORDPRESS_DATABASE_NAME\`.* 
+  TO '$WORDPRESS_DATABASE_USER'@'%';
 
 FLUSH PRIVILEGES;
 EOF
+else
+    echo "--- MariaDB is already initialized ---"
+fi
 
-# Start MariaDB in the foreground (as PID 1)
-echo "MariaDB is ready to use"
-exec mysqld_safe --user=mysql
-
+echo "--- Starting MariaDB server ---"
+exec mysqld --user=mysql --defaults-file=/etc/my.cnf.d/my.cnf

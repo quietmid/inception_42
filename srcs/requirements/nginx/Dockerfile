@@ -12,12 +12,12 @@ EXPOSE 443
 # default.conf & ssl/tls cert files
 RUN mkdir -p /etc/nginx/ssl
 
+COPY ./conf/ssl-signed.conf /etc/nginx/snippets/ssl-signed.conf
 # Copy custom NGINX configuration
 # COPY <src> ... <dest> it makes sure the src files or directories are copied to the dest directory
 COPY ./conf/nginx.conf /etc/nginx/nginx.conf
 
 COPY ./tools/nginxScript.sh /usr/local/bin/nginxScript.sh
-
 RUN chmod +x /usr/local/bin/nginxScript.sh
 
 # generate a self-signed certificate

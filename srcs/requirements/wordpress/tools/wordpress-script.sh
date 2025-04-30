@@ -35,7 +35,6 @@ wp config create \
     --extra-php <<PHP
 define('WP_HOME', 'https://$DOMAIN_NAME');
 define('WP_SITEURL', 'https://$DOMAIN_NAME');
-define('FS_METHOD', 'direct');
 PHP
 
 # Install WordPress
