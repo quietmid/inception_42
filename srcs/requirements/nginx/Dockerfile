@@ -12,7 +12,7 @@ EXPOSE 443
 # default.conf & ssl/tls cert files
 RUN mkdir -p /etc/nginx/ssl
 
-COPY ./conf/ssl-signed.conf /etc/nginx/snippets/ssl-signed.conf
+COPY ./conf/self-signed.conf /etc/nginx/snippets/self-signed.conf
 # Copy custom NGINX configuration
 # COPY <src> ... <dest> it makes sure the src files or directories are copied to the dest directory
 COPY ./conf/nginx.conf /etc/nginx/nginx.conf

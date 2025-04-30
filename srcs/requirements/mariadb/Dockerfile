@@ -10,6 +10,7 @@ EXPOSE 3306
 # RUN mkdir -p /var/lib/mysql /var/log/mysql /run/mysqld \
 # 	&& chown -R mysql:mysql /var/lib/mysql /var/log/mysql /run/mysqld \
 # 	&& mariadb-install-db --user=mysql --datadir=/var/lib/mysql
+
 # Install MariaDB with the required dependencies
 RUN apk update && apk add --no-cache \
     mariadb \

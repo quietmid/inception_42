@@ -12,10 +12,12 @@ else
 	echo "SSL Certificate created"
 fi
 
-# need to fill in the or append the selfsigned conf?
-
-echo "ssl_certificate /etc/nginx/ssl/nginx.crt;" >> /etc/nginx/snippets/self-signed.conf
-echo "ssl_certificate_key /etc/nginx/ssl/nginx.key;" >> /etc/nginx/snippets/self-signed.conf
+# Append to self-signed.conf only if not already present
+if ! grep -q "ssl_certificate" /etc/nginx/snippets/self-signed.conf; then
+    echo "ssl_certificate /etc/nginx/ssl/nginx.crt;" >> /etc/nginx/snippets/self-signed.conf
+    echo "ssl_certificate_key /etc/nginx/ssl/nginx.key;" >> /etc/nginx/snippets/self-signed.conf
+    echo "Self-signed SSL configuration added."
+fi
 
 # Create user and group for NGINX if not already present
 if ! id "www-data" >/dev/null 2>&1; then

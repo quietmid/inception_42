@@ -1,11 +1,20 @@
 volumes:
-  wordpress_data:
-    name: wordpress_data
-    driver: local
 
   db_data:
     name: db_data
     driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/jlu/data/mariadb
+
+  wordpress_data:
+    name: wordpress_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/jlu/data/wordpress
 
 networks:
   inception:
@@ -14,7 +23,7 @@ networks:
 services:
   mariadb:
     build: ./requirements/mariadb
-    container_name: mariadb
+    container_name: mariadb-cont
     image: mariadb:00.00.01
     env_file:
       - .env
@@ -26,7 +35,7 @@ services:
 
   wordpress:
     build: ./requirements/wordpress
-    container_name: wordpress
+    container_name: wordpress-cont
     image: wordpress:00.00.02
     env_file:
       - .env
@@ -41,7 +50,7 @@ services:
     restart: always
     
   nginx:
-    container_name: nginx
+    container_name: nginx-cont
     build: ./requirements/nginx
     image: nginx:00.00.03
     ports:
