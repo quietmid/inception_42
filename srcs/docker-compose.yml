@@ -5,7 +5,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${DATA_DIR}/mariadb
+      device: /home/jlu/data/mariadb
 
   wordpress_data:
     name: wordpress_data
@@ -13,7 +13,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${DATA_DIR}/wordpress
+      device: /home/jlu/data/wordpress
 
 networks:
   inception:
@@ -23,6 +23,7 @@ services:
   mariadb:
     build: ./requirements/mariadb
     container_name: mariadb
+    image: mariadb
     env_file:
       - .env
     volumes:
@@ -34,7 +35,7 @@ services:
   wordpress:
     build: ./requirements/wordpress
     container_name: wordpress
-    image: wordpress:00.00.02
+    image: wordpress
     env_file:
       - .env
     depends_on:
@@ -50,7 +51,7 @@ services:
   nginx:
     container_name: nginx
     build: ./requirements/nginx
-    image: nginx:00.00.03
+    image: nginx
     ports:
       - "443:443"
     env_file:

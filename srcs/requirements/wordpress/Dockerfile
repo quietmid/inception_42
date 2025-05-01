@@ -1,4 +1,4 @@
-FROM alpine:3.20
+FROM alpine:3.20.6
 
 # Install required PHP extensions for WordPress
 # - mariadb-client: MariaDB client, used to connect to the database and mysql commands tools

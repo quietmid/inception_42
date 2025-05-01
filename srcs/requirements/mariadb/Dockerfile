@@ -1,4 +1,4 @@
-FROM alpine:3.20
+FROM alpine:3.20.6
 
 # Expose MariaDB port internally
 EXPOSE 3306
