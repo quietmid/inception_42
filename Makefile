@@ -9,7 +9,7 @@ GREEN=$(shell echo -e "\033[1;32m")
 DATA_DIR=/home/jlu/data
 
 # Docker compose file
-COMPOSE=docker-compose -f ./srcs/docker-compose.yml
+COMPOSE=docker compose -f ./srcs/docker-compose.yml
 
 # Commands
 .PHONY: all up down clean fclean re
