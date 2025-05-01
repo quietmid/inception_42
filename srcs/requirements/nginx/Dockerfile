@@ -9,6 +9,8 @@ RUN apk update && \
 RUN mkdir -p /etc/nginx/ssl && \
 	mkdir -p /etc/nginx/snippets
 
+RUN ls -la ./conf/
+RUN ls -la ./tools/
 # Copy configurations
 COPY ./conf/self-signed.conf /etc/nginx/snippets/self-signed.conf
 # Copy custom NGINX configuration
