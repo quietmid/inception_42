@@ -12,39 +12,30 @@
 # 	echo "SSL Certificate created"
 # fi
 
-# # Append to self-signed.conf only if not already present
-# if ! grep -q "ssl_certificate" /etc/nginx/snippets/self-signed.conf; then
-#     echo "ssl_certificate /etc/nginx/ssl/nginx.crt;" >> /etc/nginx/snippets/self-signed.conf
-#     echo "ssl_certificate_key /etc/nginx/ssl/nginx.key;" >> /etc/nginx/snippets/self-signed.conf
-#     echo "Self-signed SSL configuration added."
-# fi
-
-# # Create user and group for NGINX if not already present
-# if ! id "www-data" >/dev/null 2>&1; then
-#     adduser -D -H -s /sbin/nologin -g www-data www-data
-# fi
-
-# exec nginx -g "daemon off;"
+# Create SSL directory if it doesn't exist
+mkdir -p /etc/nginx/ssl
 
 echo "Is ssl certificate present?"
 
-if test -f $CERTS_KEY; then
+if test -f "$CERTS_KEY"; then
 	echo "Yes, ssl certificate here!"
-
 else
 	echo "No, generating now..."
 	openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-		-keyout ${CERTS_KEY} -out ${CERTS_CRT} \
+		-keyout "$CERTS_KEY" -out "$CERTS_CRT" \
 		-subj "/C=FI/ST=Uusimaa/L=Helsinki/O=42/OU=Hive/CN=${DOMAIN_NAME}"
 	echo "SSL certificate generated"
-
 fi
-	#appends to a selfsigned conf
+
+# Create snippets directory if it doesn't exist
+mkdir -p /etc/nginx/snippets
+
+# appends to a selfsigned conf
 echo "Adding SSL configuration"
-echo "ssl_certificate ${CERTS_CRT};" >> /etc/nginx/snippets/self-signed.conf
+echo "ssl_certificate ${CERTS_CRT};" > /etc/nginx/snippets/self-signed.conf
 echo "ssl_certificate_key ${CERTS_KEY};" >> /etc/nginx/snippets/self-signed.conf
 
-#creating user and adding them to a group 
+# creating user and adding them to a group 
 if ! id "www-data" >/dev/null 2>&1; then
     adduser -D -H -s /sbin/nologin -g www-data www-data
 fi
