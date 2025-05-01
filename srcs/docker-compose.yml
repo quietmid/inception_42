@@ -1,12 +1,11 @@
 volumes:
-
   db_data:
     name: db_data
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: /home/jlu/data/mariadb
+      device: ${DATA_DIR}/mariadb
 
   wordpress_data:
     name: wordpress_data
@@ -14,7 +13,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /home/jlu/data/wordpress
+      device: ${DATA_DIR}/wordpress
 
 networks:
   inception:

@@ -6,30 +6,40 @@ RED=$(shell echo -e "\033[1;31m")
 GREEN=$(shell echo -e "\033[1;32m")
 
 # Paths
-DATA_DIR=/
+# Detect OS and set DATA_DIR accordingly
+ifeq ($(shell uname), Darwin)
+    # For macOS
+    DATA_DIR=/tmp/data
+else
+    # For Linux (default)
+    DATA_DIR=$(HOME)/data
+endif
 
 # Docker compose file
-COMPOSE = docker-compose -f ./srcs/docker-compose.yml
+COMPOSE=DATA_DIR=$(DATA_DIR) docker-compose -f ./srcs/docker-compose.yml
 
 # Commands
-.PHONY: all build up down restart logs test clean
-
-all: build up
-
-build:
-	$(COMPOSE) build
+.PHONY: all up down clean fclean re
 
 up:
-	$(COMPOSE) up -d
+	@echo "$(BLUE)Creating data directories...$(RESET)"
+	@mkdir -p $(DATA_DIR)/mariadb
+	@mkdir -p $(DATA_DIR)/wordpress
+	@echo "$(GREEN)Data directories created at $(DATA_DIR)$(RESET)"
+	$(COMPOSE) up --build -d
 
 down:
 	$(COMPOSE) down
 
-restart:
-	$(COMPOSE) restart
+clean:
+	$(COMPOSE) down --rmi all -v
 
-logs:
-	$(COMPOSE) logs -f nginx
+fclean: clean
+	@echo "$(YELLOW)Removing data directories...$(RESET)"
+	@rm -rf $(DATA_DIR)
+	@echo "$(GREEN)Removing all unused Docker resources...$(RESET)"
+	docker system prune -f --volumes
 
-	
-.PHONY: all re down clean
+all: up
+
+re: fclean all
