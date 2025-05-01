@@ -1,9 +1,6 @@
 #!/bin/sh
+#makes the script exit immediately if command fails
 set -e
-
-echo "--- Ensuring correct permissions for /var/lib/mysql ---"
-chown -R mysql:mysql /var/lib/mysql
-chmod 750 /var/lib/mysql
 
 echo "--- Checking MariaDB initialization ---"
 # Only initialize if system tables don't exist
@@ -11,7 +8,6 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
     echo "--- Initializing MariaDB system tables ---"
     mariadb-install-db --user=mysql --datadir=/var/lib/mysql >/dev/null
 
-    echo "--- Creating WordPress database and user ---"
     mysqld --user=mysql --bootstrap <<EOF
 USE mysql;
 FLUSH PRIVILEGES;

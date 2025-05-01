@@ -32,14 +32,16 @@ RUN adduser -S www-data -g www-data -D -G www-data
 # Copy PHP-FPM configuration
 # COPY ./conf/www.conf /usr/local/etc/php-fpm.d/www.conf 
 COPY ./conf/www.conf /etc/php83/php-fpm.d/www.conf
+# copy and set up wordpress script
+COPY ./tools/wordpress-script.sh /usr/local/bin/wordpress-script.sh
+
+RUN chmod +x /usr/local/bin/wordpress-script.sh
 
 # Create necessary directories
 RUN mkdir -p /var/www/html \
     && chown -R www-data:www-data /var/www/html
+    && chmod -R 755 /var/www/html
 
-# copy and set up wordpress script
-COPY ./tools/wordpress-script.sh /usr/local/bin/wordpress-script.sh
-RUN chmod +x /usr/local/bin/wordpress-script.sh
 
 # Set working directory
 WORKDIR /var/www/html
@@ -51,4 +53,4 @@ USER www-data
 EXPOSE 9000
 
 # Start WordPress setup and PHP-FPM
-CMD ["/usr/local/bin/wordpress-script.sh"]
+ENTRYPOINT ["/usr/local/bin/wordpress-script.sh"]

@@ -3,16 +3,6 @@ FROM alpine:3.20.6
 RUN apk update && \
 	apk add --no-cache nginx openssl 
 
-# Create required directories
-# this is where nginx store its PID and runtime files
-# default.conf & ssl/tls cert files
-RUN mkdir -p /etc/nginx/ssl && \
-	mkdir -p /etc/nginx/snippets
-
-RUN ls -la ./conf/
-RUN ls -la ./tools/
-# Copy configurations
-COPY ./conf/self-signed.conf /etc/nginx/snippets/self-signed.conf
 # Copy custom NGINX configuration
 COPY ./conf/nginx.conf /etc/nginx/nginx.conf
 RUN chmod 644 /etc/nginx/nginx.conf
