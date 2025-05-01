@@ -1,4 +1,14 @@
+# Colors
+RESET=$(shell echo -e "\033[0m")
+BLUE=$(shell echo -e "\033[1;34m")
+YELLOW=$(shell echo -e "\033[1;33m")
+RED=$(shell echo -e "\033[1;31m")
+GREEN=$(shell echo -e "\033[1;32m")
+
 # Paths
+DATA_DIR=/
+
+# Docker compose file
 COMPOSE = docker-compose -f ./srcs/docker-compose.yml
 
 # Commands
@@ -21,13 +31,5 @@ restart:
 logs:
 	$(COMPOSE) logs -f nginx
 
-test:
-	# Test TLSv1.2 and TLSv1.3 (Should succeed)
-	openssl s_client -connect localhost:443 -tls1_2
-	openssl s_client -connect localhost:443 -tls1_3
-	
-	# Test TLSv1.0 and TLSv1.1 (Should fail)
-	openssl s_client -connect localhost:443 -tls1 || true
-	openssl s_client -connect localhost:443 -tls1_1 || true
 	
 .PHONY: all re down clean
