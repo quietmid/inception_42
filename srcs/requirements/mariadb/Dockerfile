@@ -1,5 +1,7 @@
 FROM alpine:3.20.6
 
+EXPOSE 3306
+
 # Install required packages
 RUN apk update && apk add --no-cache \
     mariadb \
@@ -22,9 +24,6 @@ COPY ./tools/configure_db.sh /usr/local/bin/configure_db.sh
 # Set permissions
 RUN chmod +x /usr/local/bin/configure_db.sh
 RUN chmod 644 /etc/my.cnf.d/my.cnf
-
-# Expose port
-EXPOSE 3306
 
 # Start MariaDB
 CMD ["/usr/local/bin/configure_db.sh"]
