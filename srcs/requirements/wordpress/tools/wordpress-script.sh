@@ -3,17 +3,14 @@
 # Exit on any error
 set -e
 
-# Set PHP memory limit
-echo "Setting PHP memory limit..."
-echo "memory_limit = 512M" >> /etc/php83/php.ini
-
 # go to wordpress directory where files are stored
 cd /var/www/html
 
 # Download and setup WP-CLI and make it executable
 echo "Downloading WP-CLI..."
-wget -q https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -O /usr/local/bin/wp || { echo "Failed to download wp-cli.phar"; exit 1; }
-chmod +x /usr/local/bin/wp
+wget -q https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -O /tmp/wp-cli.phar || { echo "Failed to download wp-cli.phar"; exit 1; }
+chmod +x /tmp/wp-cli.phar
+mv /tmp/wp-cli.phar /usr/local/bin/wp
 
 # Wait for MariaDB to be ready
 echo "Waiting for MariaDB..."

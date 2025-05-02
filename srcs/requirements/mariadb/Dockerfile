@@ -1,33 +1,33 @@
 FROM alpine:3.20.6
 
-# Expose MariaDB port internally
-EXPOSE 3306
-
-# Install MariaDB with the required dependencies
+# Install required packages
 RUN apk update && apk add --no-cache \
     mariadb \
     mariadb-client \
-    mariadb-common \
+    mariadb-server-utils \
     && rm -rf /var/cache/apk/*
 
-# Create necessary directories with proper permissions
+# Create necessary directories and set permissions
 RUN mkdir -p /run/mysqld \
     && chown -R mysql:mysql /run/mysqld \
     && mkdir -p /var/lib/mysql \
     && chown -R mysql:mysql /var/lib/mysql \
-    && chmod 750 /var/lib/mysql \
+    && mkdir -p /var/log/mysql \
+    && chown -R mysql:mysql /var/log/mysql
 
-# Copy custom configuration files if any
+# Copy configuration files
 COPY ./conf/my.cnf /etc/my.cnf.d/my.cnf
 COPY ./tools/configure_db.sh /usr/local/bin/configure_db.sh
 
-# give the correct permissions
-# +x for executable, 644 for read only
-RUN chmod +x /usr/local/bin/configure_db.sh \
-    && chmod 644 /etc/my.cnf.d/my.cnf
+# Set permissions
+RUN chmod +x /usr/local/bin/configure_db.sh
+RUN chmod 644 /etc/my.cnf.d/my.cnf
 
-# Define volume for persistent data
-VOLUME ["/var/lib/mysql"]
+# Set environment variables
+ENV MYSQL_PORT=3306
 
-# Run MariaDB properly as PID 1
-ENTRYPOINT ["/usr/local/bin/configure_db.sh"]
+# Expose port
+EXPOSE 3306
+
+# Start MariaDB
+CMD ["/usr/local/bin/configure_db.sh"]

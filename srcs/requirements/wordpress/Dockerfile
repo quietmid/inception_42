@@ -39,9 +39,17 @@ RUN chmod +x /usr/local/bin/wordpress-script.sh
 
 # Create necessary directories
 RUN mkdir -p /var/www/html \
-    && chown -R www-data:www-data /var/www/html
+    && chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
 
+# Create php.ini with memory limit
+RUN echo "memory_limit = 512M" > /etc/php83/php.ini \
+    && chown www-data:www-data /etc/php83/php.ini \
+    && chmod 644 /etc/php83/php.ini
+
+# Ensure www-data has necessary permissions
+RUN chown -R www-data:www-data /usr/local/bin \
+    && chmod -R 755 /usr/local/bin
 
 # Set working directory
 WORKDIR /var/www/html
