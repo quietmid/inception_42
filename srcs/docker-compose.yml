@@ -24,6 +24,11 @@ services:
     build: ./requirements/mariadb
     container_name: mariadb
     image: mariadb
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "--protocol=tcp", "--host=localhost", "-u", "$WORDPRESS_DATABASE_USER", "--password=$WORDPRESS_DATABASE_USER_PASSWORD"]
+      interval: 5s
+      timeout: 60s
+      retries: 10
     env_file:
       - .env
     ports:
@@ -41,7 +46,8 @@ services:
     env_file:
       - .env
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
     volumes:
       - wordpress_data:/var/www/html
     expose:

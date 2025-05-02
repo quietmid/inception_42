@@ -3,6 +3,14 @@ echo "entered wordpress script"
 # Exit on any error
 set -e
 
+# Skip if WordPress is already installed
+if [ -f "/var/www/html/wp-config.php" ]; then
+    echo "WordPress already installed. Starting PHP-FPM..."
+    mkdir -p /var/log/php83
+    chown -R www-data:www-data /var/log/php83
+    exec php-fpm83 -F
+    exit 0
+fi
 
 # Download and setup WP-CLI and make it executable
 echo "Downloading WP-CLI..."
@@ -30,7 +38,10 @@ wp config create \
     --dbname=$WORDPRESS_DATABASE_NAME \
     --dbuser=$WORDPRESS_DATABASE_USER \
     --dbpass=$WORDPRESS_DATABASE_USER_PASSWORD \
-    --dbhost=mariadb 
+    --dbhost=mariadb \
+    --allow-root \
+    --force \
+    --skip-check
 
 # Install WordPress
 echo "Installing WordPress..."
