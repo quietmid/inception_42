@@ -38,7 +38,7 @@ COPY ./tools/wordpress-script.sh /usr/local/bin/wordpress-script.sh
 RUN chmod +x /usr/local/bin/wordpress-script.sh
 
 # Create necessary directories
-RUN mkdir -p /var/www/html \
+RUN mkdir -p /var/www/wp /var/www/html \
     && chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
 
