@@ -68,10 +68,12 @@ wp user create \
 # find /var/www/html -type d -exec chmod 755 {} \;
 # find /var/www/html -type f -exec chmod 644 {} \;
 
-mkdir -p /var/log/php83
-chmod 777 /var/log/php83
-chown -R www-data:www-data /var/log/php83
+# Use alternative log directory
+mkdir -p /tmp/php83_logs
+touch /tmp/php83_logs/error.log
+chown -R www-data:www-data /tmp/php83_logs
 
 # Start PHP-FPM in foreground mode
 echo "Starting PHP-FPM..."
-exec php-fpm83 -F 
+# exec php-fpm83 -F 
+exec php-fpm83 -F --fpm-config /usr/local/etc/php-fpm.conf -c /usr/local/etc/php/php.ini -d error_log=/tmp/php83_logs/error.log
