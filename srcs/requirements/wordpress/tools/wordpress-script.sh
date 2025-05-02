@@ -1,5 +1,5 @@
 #!/bin/sh
-
+echo "entered wordpress script"
 # Exit on any error
 set -e
 

@@ -32,4 +32,4 @@ else
 fi
 
 echo "--- Starting MariaDB server ---"
-exec mysqld --user=mysql --port=${MYSQL_PORT} --bind-address=0.0.0.0
+exec mysqld --user=mysql

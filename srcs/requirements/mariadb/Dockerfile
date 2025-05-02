@@ -23,9 +23,6 @@ COPY ./tools/configure_db.sh /usr/local/bin/configure_db.sh
 RUN chmod +x /usr/local/bin/configure_db.sh
 RUN chmod 644 /etc/my.cnf.d/my.cnf
 
-# Set environment variables
-ENV MYSQL_PORT=3306
-
 # Expose port
 EXPOSE 3306
 
