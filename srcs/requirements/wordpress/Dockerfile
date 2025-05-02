@@ -12,12 +12,14 @@ FROM alpine:3.20.6
 # - wget: wget, command line tool for downloading files from the web
 RUN apk update && apk add mariadb-client \
     php83 \
-    php83-fpm \
     php83-phar \
-    php83-curl \
+    php83-fpm \
     php83-mysqli \
-    php83-iconv \
     php83-json \
+    php83-gd \
+    php83-curl \
+    php83-xml \
+    php83-mbstring \
     wget \
     && rm -rf /var/cache/apk/*
 
@@ -34,7 +36,6 @@ RUN adduser -S www-data -g www-data -D -G www-data
 COPY ./conf/www.conf /etc/php83/php-fpm.d/www.conf
 # copy and set up wordpress script
 COPY ./tools/wordpress-script.sh /usr/local/bin/wordpress-script.sh
-
 RUN chmod +x /usr/local/bin/wordpress-script.sh
 
 # Create necessary directories
@@ -53,9 +54,6 @@ RUN chown -R www-data:www-data /usr/local/bin \
 
 # Set working directory
 WORKDIR /var/www/html
-
-# Switch to www-data user
-USER www-data
 
 # Expose port 9000 for PHP-FPM
 EXPOSE 9000
