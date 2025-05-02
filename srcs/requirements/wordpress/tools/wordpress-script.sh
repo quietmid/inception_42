@@ -14,7 +14,10 @@ mv /tmp/wp-cli.phar /usr/local/bin/wp
 
 # Wait for MariaDB to be ready
 echo "Waiting for MariaDB..."
-mariadb-admin ping --protocol=tcp --host=mariadb -u $WORDPRESS_DATABASE_USER --password=$WORDPRESS_DATABASE_USER_PASSWORD --wait=300
+until mysqladmin ping -h mariadb -u $WORDPRESS_DATABASE_USER --password=$WORDPRESS_DATABASE_USER_PASSWORD --silent; do
+    echo "Waiting for MariaDB.. in loop"
+    sleep 2
+done
 
 # Download WordPress core
 echo "Downloading WordPress..."
