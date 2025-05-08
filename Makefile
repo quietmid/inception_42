@@ -16,12 +16,17 @@ COMPOSE= srcs/docker-compose.yml
 # Commands
 .PHONY: all up down clean fclean re
 
-up: $(COMPOSE)
+all: $(NAME)
+
+$(NAME):
 	@echo "$(BLUE)Creating data directories...$(RESET)"
 	@mkdir -p $(DATA_DIR)/mariadb
 	@mkdir -p $(DATA_DIR)/wordpress
 	@echo "$(GREEN)Data directories created at $(DATA_DIR)$(RESET)"
 	cd srcs && docker compose up --build -d
+	touch $(NAME)
+
+up: $(NAME)
 
 down:
 	cd srcs && docker compose down
@@ -34,7 +39,6 @@ fclean: clean
 	@sudo rm -rf $(DATA_DIR)
 	@echo "$(GREEN) Removing all unused Docker resources...$(RESET)"
 	docker system prune -f --volumes
-
-all: up
+	rm -f $(NAME)
 
 re: fclean all
