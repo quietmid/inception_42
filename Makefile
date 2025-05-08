@@ -16,7 +16,7 @@ COMPOSE= srcs/docker-compose.yml
 # Commands
 .PHONY: all up down clean fclean re
 
-up: $(COMPOSE)
+up:
 	@echo "$(BLUE)Creating data directories...$(RESET)"
 	@mkdir -p $(DATA_DIR)/mariadb
 	@mkdir -p $(DATA_DIR)/wordpress
